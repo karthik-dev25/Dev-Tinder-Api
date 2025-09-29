@@ -1,24 +1,34 @@
-const express = require('express');
+const express = require("express");
+const connectDB = require("./config/database");
+const User = require("./models/user");
 
 const app = express();
 
-app.use('/test',(req,res)=>{
-    res.send("API Test Route")
+app.post("/signup", async (req, res) => {
+  const userObject = {
+    firstName: "Karthik",
+    lastName: "N",
+    emailId: "karthik123@gmail.com",
+    password: "karthik@0388",
+  };
+
+  const user = new User(userObject);
+
+  try {
+    await user.save();
+    res.send("User Added Successfully");
+  } catch (error) {
+    res.status(400).send("Error saving user:", error.message);
+  }
 });
 
-app.get('/user/:userId/:name/:password',(req,res)=>{
-    console.log(req.params)
-    res.send({firstName:"Karthik",lastName:"N"})
-});
-
-app.post('/user',(req,res)=>{
-    res.send('Data Saved Successfully to DB')
-});
-
-app.delete('/user',(req,res)=>{
-    res.send('Data Deleted Successfully')
-});
-
-app.listen(3000,()=>{
-    console.log("Server is Running Successfully on Port 3000")
-})
+connectDB()
+  .then(() => {
+    console.log("Database connection established...");
+    app.listen(3000, () => {
+      console.log("Server is Running Successfully on Port 3000...");
+    });
+  })
+  .catch((err) => {
+    console.log("Database connection not established....");
+  });
