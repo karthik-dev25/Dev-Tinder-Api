@@ -13,7 +13,7 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User Added Successfully");
   } catch (error) {
-    res.status(400).send("Error saving user:", error.message);
+    res.status(400).send("Error saving user: " + error.message);
   }
 });
 
@@ -27,7 +27,7 @@ app.get("/user", async (req, res) => {
       res.send(user);
     }
   } catch (error) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send("Something went wrong: " + error.message);
   }
 });
 
@@ -40,7 +40,7 @@ app.get("/feed", async (req, res) => {
       res.send(user);
     }
   } catch (error) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send("Something went wrong: " + error.message);
   }
 });
 
@@ -50,18 +50,36 @@ app.delete("/user", async (req, res) => {
     await User.findByIdAndDelete(userId);
     res.send("User Deleted Successfully");
   } catch (error) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send("Something went wrong: " + error.message);
   }
 });
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
   const data = req.body;
   try {
-    const user = await User.findByIdAndUpdate({ _id: userId }, data);
+    let ALLOW_FIELDS_UPDATE = [
+      "age",
+      "gender",
+      "photoUrl",
+      "skills",
+      "about",
+      "password",
+    ];
+    let isUpdateAllowed = Object.keys(data).every((key) =>
+      ALLOW_FIELDS_UPDATE.includes(key)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error(
+        "Update is not allowed, Please add only the respective fields"
+      );
+    }
+    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+      runValidators: true,
+    });
     res.send("User Updated Successfully");
   } catch (error) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send("Something went wrong: " + error.message);
   }
 });
 
