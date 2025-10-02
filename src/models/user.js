@@ -100,6 +100,11 @@ userSchema.methods.validatePassword = async function (passwordInputByUser) {
   return isPasswordValid;
 };
 
+userSchema.methods.passwordHash = async function (passwordInputByUser) {
+  const passwordHash = await bcrypt.hash(passwordInputByUser, 10);
+  return passwordHash;
+};
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
