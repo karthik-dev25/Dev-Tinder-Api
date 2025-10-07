@@ -29,7 +29,7 @@ connectionRequestSchema.index({
 
 connectionRequestSchema.pre("save", function (next) {
   const connectionRequest = this;
-  if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+  if (connectionRequest?.fromUserId === connectionRequest.toUserId) {
     throw new Error("Connection request cannot sent to yourself");
   }
   next();
