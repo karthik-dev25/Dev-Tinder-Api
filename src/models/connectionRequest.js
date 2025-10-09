@@ -4,10 +4,12 @@ const connectionRequestSchema = new mongoose.Schema(
   {
     fromUserId: {
       type: String,
+      ref:"User",
       required: true,
     },
     toUserId: {
       type: String,
+      ref:"User",
       required: true,
     },
     status: {
