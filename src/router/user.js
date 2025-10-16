@@ -18,7 +18,10 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
       .populate("fromUserId", USER_SAFE)
       .populate("toUserId", USER_SAFE);
     if (!connectionRequest.length) {
-      throw new Error("Connection requests not found!!");
+      return res.json({
+        message: "Data fetched successfully!!",
+        data: [],
+      });
     }
 
     res.json({
@@ -51,7 +54,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     });
 
     if (!connectionRequest.length) {
-      throw new Error("Connection requests not found!!");
+      return res.status(404).send("Connection requests not found!!");
     }
 
     res.json({
