@@ -24,7 +24,7 @@ authRouter.post("/signup", async (req, res) => {
     await user.save();
     res.send("User Signed Successfully");
   } catch (error) {
-    res.status(400).send("Error saving user: " + error.message);
+    res.status(400).send("Error: " + error.message);
   }
 });
 
