@@ -2,6 +2,7 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const { validateProfileEditData } = require("../utils/validation");
 const validator = require("validator");
+const User = require("../models/user");
 
 const profileRouter = express.Router();
 
@@ -34,18 +35,23 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res, next) => {
   }
 });
 
-profileRouter.patch("/profile/password", userAuth, async (req, res) => {
+profileRouter.patch("/forgot/password", async (req, res) => {
   try {
-    const { currentPassword, newPassword } = req.body;
-    let loggedInUser = req.user;
+    const {emailId, newPassword , confirmPassword } = req.body;
+
+    if(newPassword.toString() !== confirmPassword.toString()){
+      throw new Error("Password mismatch !!");
+    }
+
+    const loggedInUser = await User.findOne({emailId:emailId});
 
     if (!validator.isStrongPassword(newPassword)) {
       throw new Error("Please enter a strong password");
     }
 
-    const isPasswordValid = await loggedInUser.validatePassword(currentPassword);
+    //const isPasswordValid = await loggedInUser.validatePassword(currentPassword);
 
-    if (!isPasswordValid) {
+    if (!loggedInUser) {
       throw new Error("Invalid Credentials");
     }
 
@@ -55,7 +61,7 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
     
     await loggedInUser.save();
     
-    res.send("Password updated successfully !!!");
+    res.send("Password Reset successful!!!");
   } catch (error) {
     res.status(400).send("ERROR: " + error.message);
   }
